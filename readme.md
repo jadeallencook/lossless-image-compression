@@ -1,6 +1,6 @@
 # Lossless Image Compression
 
-**Step 1:** Split the image into chunks
+**Step 1:** Split the image into chunks (164 bytes).
 
 ```
 1:  12, 12, 12, 255
@@ -13,7 +13,7 @@
 8:  245, 245, 245, 245
 ```
 
-**Step 2:** Convert numbers to specials chars.
+**Step 2:** Convert numbers to specials chars (71 bytes).
 
 ```
 1:  ŸŸŸδ
@@ -26,7 +26,7 @@
 8:  ßßßß
 ```
 
-**Step 3:** Dedup chunks by mapping and ref.
+**Step 3:** Dedup chunks by mapping and ref (65 bytes).
 
 ```
 1:  ŸŸŸδ
@@ -39,7 +39,7 @@
 8:  ßßßß
 ```
 
-**Step 4:** Shorten chunks with 3+ same chars.
+**Step 4:** Shorten chunks with 3+ same chars (59 bytes).
 
 ```
 1:  Ÿ-δ
