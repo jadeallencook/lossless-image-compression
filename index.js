@@ -26,13 +26,13 @@ function chunk(data) {
 
 function write(compressed) {
   const before = fs.statSync('./chunks.sm');
-  console.log(`Previous: ${before.size.toLocaleString()} bytes`);
+  console.log('\n\x1b[34mPrevious: ', `\x1b[0m${before.size.toLocaleString()} bytes`);
   fs.writeFile('./chunks.sm', compressed, function (err) {
     if (err) return console.log(err);
     const compressed = fs.statSync('./chunks.sm');
     const orginal = fs.statSync(image);
-    console.log(`Compressed: ${compressed.size.toLocaleString()} bytes`);
-    console.log(`Orginal: ${orginal.size.toLocaleString()} bytes`);
+    console.log('\x1b[32mCompressed: ', `\x1b[0m${compressed.size.toLocaleString()} bytes`);
+    console.log('\x1b[33mOriginal: ', `\x1b[0m${orginal.size.toLocaleString()} bytes\n`);
   });
 }
 
