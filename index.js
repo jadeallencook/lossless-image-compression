@@ -9,8 +9,9 @@ const chunk = require('./src/chunk');
 const convert = require('./src/convert');
 const dedup = require('./src/dedup');
 const compress = require('./src/compress');
-const image = './assets/large.png';
+const shorten = require('./src/shorten');
 const isDev = process.argv[2] === '--dev';
+const image = './assets/plain.png';
 
 function write(compressed) {
   const before = fs.statSync('./chunks.sm');
@@ -39,8 +40,9 @@ getPixels(image, function (err, { shape, data }) {
   const converted = convert(chucks);
   const deduped = dedup(converted);
   const compressed = compress(deduped);
+  const shortened = shorten(compressed);
   let string = `(${shape[0]})`;
   string += isDev ? '\n' : '';
-  string += compressed;
+  string += shortened.join('\n');
   write(string);
 });
