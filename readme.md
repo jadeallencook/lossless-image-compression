@@ -1,5 +1,9 @@
 # Lossless Image Compression
 
+This is a fun little project to work on image data compression. Initally the image is converted to an array of RGBA values and the goal is to compress it as much as possible but keep all data. Right now I'm working on the the compression algorithm but later I'd like to add a decompression algorithm.  
+
+## Current Process
+
 **Step 1:** Split the image into chunks (212 bytes).
 
 ```
