@@ -10,8 +10,9 @@ const convert = require('./src/convert');
 const dedup = require('./src/dedup');
 const compress = require('./src/compress');
 const shorten = require('./src/shorten');
+const repeaters = require('./src/repeaters');
 const isDev = process.argv[2] === '--dev';
-const image = './assets/plain.png';
+const image = './assets/small.jpg';
 
 function write(compressed) {
   const before = fs.statSync('./chunks.sm');
@@ -41,8 +42,9 @@ getPixels(image, function (err, { shape, data }) {
   const deduped = dedup(converted);
   const compressed = compress(deduped);
   const shortened = shorten(compressed);
+  const unrepeated = repeaters(shortened);
   let string = `(${shape[0]})`;
   string += isDev ? '\n' : '';
-  string += shortened.join('\n');
+  string += unrepeated.join('\n');
   write(string);
 });
