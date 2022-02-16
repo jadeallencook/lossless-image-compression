@@ -12,7 +12,7 @@ const compress = require('./src/compress');
 const shorten = require('./src/shorten');
 const repeaters = require('./src/repeaters');
 const isDev = process.argv[2] === '--dev';
-const image = './assets/small.jpg';
+const image = './assets/large.png';
 
 function write(compressed) {
   const before = fs.statSync('./chunks.sm');

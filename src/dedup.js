@@ -1,6 +1,6 @@
 /*
     dedups values in the stream
-    [zŽδã, zŽδã, zŽΘã, zŽΘã] => [zŽδã, 0, zŽΘã, 2]
+    [abcd, abcd, efgh, efgh] => [abcd, 0, efgh, 2]
 */
 
 module.exports = function dedup(data) {
