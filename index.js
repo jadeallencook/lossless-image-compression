@@ -3,71 +3,66 @@
     Developed by @jadeallencook
 */
 
-const getPixels = require("get-pixels");
-const fs = require("fs");
-const image = "./bridge.jpg";
+const getPixels = require('get-pixels');
+const fs = require('fs');
+const image = './image.jpg';
+const isDev = process.argv[2] === '--dev';
 
-// used to add new lines to sm file
-const isDev = true;
-
-// import image and get pixel data
-getPixels(image, function (err, { shape, data }) {
-  if (err) {
-    console.log("Bad image path");
-    return;
-  }
+function chunk(data) {
   let index = 0;
-  let chunk = [];
+  let rgba = [];
   let chucks = [];
-  let compressed = "";
-
-  /* 
-    convert pixels to chucks
-    [r, g, b, a]
-  */
   for (let pixel of data) {
     if (index === 4) {
-      chucks.push(chunk);
-      chunk = [];
+      chucks.push(rgba);
+      rgba = [];
       index = 0;
     }
-    chunk.push(pixel);
+    rgba.push(pixel);
     index++;
   }
+  return chucks;
+}
 
-  /*
-    remove duplicate pixels
-    12,12,12,255 - 12,12,12,255 - 12,12,12,100
-    12,12,12,255 - # - ,,,100
-  */
-  let previous = [];
-  compressed += `(${shape[0]})`;
-  compressed += isDev ? "\n" : "";
-  for (let bit of chucks) {
-    const [r1, g1, b1, a1] = previous;
-    const [r2, g2, b2, a2] = bit;
-    const r = !previous.length ? r2 : r1 === r2 ? "" : r2;
-    const g = !previous.length ? g2 : g1 === g2 ? "" : g2;
-    const b = !previous.length ? b2 : b1 === b2 ? "" : b2;
-    const a = !previous.length ? a2 : a1 === a2 ? "" : a2;
-    const rgba = `${r},${g},${b},${a}`;
-    const block = rgba.length === 3 ? '#' : rgba;
-    compressed += `${block}|`;
-    compressed += isDev ? "\n" : "";
-    previous = [...bit];
-  }
-
-  // save chunks to sm file
-  const before = fs.statSync("./chunks.sm");
+function write(compressed) {
+  const before = fs.statSync('./chunks.sm');
   console.log(`Previous: ${before.size.toLocaleString()} bytes`);
-
-  fs.writeFile("./chunks.sm", compressed, function (err) {
-    if (err) {
-      return console.log(err);
-    }
-    const compressed = fs.statSync("./chunks.sm");
+  fs.writeFile('./chunks.sm', compressed, function (err) {
+    if (err) return console.log(err);
+    const compressed = fs.statSync('./chunks.sm');
     const orginal = fs.statSync(image);
     console.log(`Compressed: ${compressed.size.toLocaleString()} bytes`);
     console.log(`Orginal: ${orginal.size.toLocaleString()} bytes`);
   });
+}
+
+function compress(chucks) {
+  const map = {};
+  let compressed = '';
+  for (let index = 0, max = chucks.length; index < max; index++) {
+    const bit = chucks[index];
+    const [r, g, b, a] = bit;
+    const rgba = `${r},${g},${b},${a}`;
+    if (map[rgba]) {
+      compressed += map[rgba];
+    } else {
+      compressed += rgba;
+      map[rgba] = index;
+    }
+    compressed += '|';
+    compressed += isDev ? '\n' : '';
+  }
+  return compressed;
+}
+
+getPixels(image, function (err, { shape, data }) {
+  if (err) {
+    console.log('Bad image path');
+    return;
+  }
+  const chucks = chunk(data);
+  let compressed = `(${shape[0]})`;
+  compressed += isDev ? '\n' : '';
+  compressed += compress(chucks);
+  write(compressed, shape[0]);
 });
